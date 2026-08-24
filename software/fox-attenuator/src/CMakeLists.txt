@@ -1,0 +1,21 @@
+target_sources(app PRIVATE
+        attenuator.cpp
+        attenuator.hpp
+        CMakeLists.txt
+        event.hpp
+        eventBusImpl.cpp
+        eventBusImpl.hpp
+        hardwareManager.cpp
+        hardwareManager.hpp
+        inputListener.cpp
+        inputListener.hpp
+        logicManager.cpp
+        logicManager.hpp
+        main.cpp
+        noncopyable.hpp
+        projectConfig.hpp
+        rgbLed.cpp
+        rgbLed.hpp
+        watchdog.cpp
+        watchdog.hpp
+)

@@ -1,0 +1,15 @@
+{
+  "terminal.integrated.stickyScroll.enabled": false,
+  "zephyr-workbench.build.configurations": [
+    {
+      "name": "primary",
+      "board": "rpi_pico/rp2040",
+      "active": "true"
+    }
+  ],
+  "zephyr-workbench.westWorkspace": "${workspaceFolder}/../../../../../zephyrproject",
+  "zephyr-workbench.toolchain": "zephyr",
+  "zephyr-workbench.sdk": "${workspaceFolder}/../../../../../zephyr-sdk-1.0.1/zephyr-sdk-1.0.1",
+  "cmake.configureOnOpen": false,
+  "cmake.enableAutomaticKitScan": false
+}

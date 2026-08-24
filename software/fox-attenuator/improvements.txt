@@ -1,0 +1,8 @@
+
+- Add ADC measurements to protect battery against deep discharge
+- Add serial port logging (USB CDC logging works very bad - excessive restarts, hangs, etc.)
+- connect BDA4601 LE signal on HW
+- BDA4601 CLK signal may be common for both attenuators
+- RF switch is probably not working? - to check on second one device
+- change RGB LED api to "color-mapping" overlay handling
+- add auto power off !

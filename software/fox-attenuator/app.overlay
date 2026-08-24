@@ -1,0 +1,204 @@
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+/ {
+	chosen {
+		zephyr,console = &cdc_acm_uart0;
+		zephyr,shell-uart = &cdc_acm_uart1;
+	};
+
+	aliases {
+		led-ws2812 = &led_strip;
+		chg-status = &chg_stat_gpio;
+		pwr-off = &pwr_off_gpio;
+		btn0 = &btn_gpio;
+		encoder0 = &encoder;
+
+		bda-clk1 = &bda_clk1;
+		bda-serin1 = &bda_serin1;
+		bda-clk2 = &bda_clk2;
+		bda-serin2 = &bda_serin2;
+		bda-le = &bda_le;
+
+		rf-sw-ctrl = &rf_sw_ctrl;
+		rf-sw-ctrl-n = &rf_sw_ctrl_n;
+
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led9: led_9 {
+			gpios = <&gpio0 9 GPIO_ACTIVE_HIGH>;
+			label = "LED GP9";
+		};
+
+		led10: led_10 {
+			gpios = <&gpio0 10 GPIO_ACTIVE_HIGH>;
+			label = "LED GP10";
+		};
+
+		led11: led_11 {
+			gpios = <&gpio0 11 GPIO_ACTIVE_HIGH>;
+			label = "LED GP11";
+		};
+
+		led12: led_12 {
+			gpios = <&gpio0 12 GPIO_ACTIVE_HIGH>;
+			label = "LED GP12";
+		};
+
+		led13: led_13 {
+			gpios = <&gpio0 13 GPIO_ACTIVE_HIGH>;
+			label = "LED GP13";
+		};
+	};
+
+	rf_switch {
+		compatible = "gpio-leds";
+
+		rf_sw_ctrl: rf_sw_ctrl {
+			gpios = <&gpio0 28 GPIO_ACTIVE_HIGH>;
+			label = "RF Switch CTRL (GP28)";
+		};
+
+		rf_sw_ctrl_n: rf_sw_ctrl_n {
+			gpios = <&gpio0 29 GPIO_ACTIVE_LOW>;
+			label = "RF Switch CTRL Inverse (GP29)";
+		};
+	};
+
+	gpio_keys {
+		compatible = "gpio-keys";
+
+		chg_stat_gpio: chg_stat {
+			gpios = <&gpio0 0 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "Charging Status";
+			zephyr,code = <INPUT_KEY_0>;
+		};
+
+		btn_gpio: button_2 {
+			gpios = <&gpio0 2 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "Encoder button";
+			zephyr,code = <INPUT_KEY_ENTER>;
+		};
+	};
+
+	pwr_ctrl {
+		compatible = "gpio-leds";
+
+		pwr_off_gpio: pwr_off {
+			gpios = <&gpio0 1 GPIO_ACTIVE_LOW>;
+			label = "Power Hold";
+		};
+	};
+
+	bda4601_if {
+		compatible = "gpio-leds";
+
+		bda_clk1: bda_clk1 {
+			gpios = <&gpio0 27 GPIO_ACTIVE_HIGH>;
+			label = "BDA4601 CLOCK1 (GP27)";
+		};
+
+		bda_serin1: bda_serin1 {
+			gpios = <&gpio0 26 GPIO_ACTIVE_HIGH>;
+			label = "BDA4601 SERIN1 (GP26)";
+		};
+
+		bda_clk2: bda_clk2 {
+			gpios = <&gpio0 15 GPIO_ACTIVE_HIGH>;
+			label = "BDA4601 CLOCK2 (GP15)";
+		};
+
+		bda_serin2: bda_serin2 {
+			gpios = <&gpio0 14 GPIO_ACTIVE_HIGH>;
+			label = "BDA4601 SERIN2 (GP14)";
+		};
+
+		bda_le: bda_le {
+			gpios = <&gpio0 8 (GPIO_ACTIVE_HIGH)>;
+			label = "BDA4601 LE (GP8)";
+		};
+	};
+
+	encoder: encoder {
+		compatible = "gpio-qdec";
+		gpios = <&gpio0 4 (GPIO_PULL_UP | GPIO_ACTIVE_HIGH)>, /* Phase A */
+		        <&gpio0 3 (GPIO_PULL_UP | GPIO_ACTIVE_HIGH)>; /* Phase B */
+		steps-per-period = <4>;
+		sample-time-us = <200>;
+		idle-timeout-ms = <100>;
+		zephyr,axis = <0>;
+		label = "Incremental Encoder";
+	};
+
+};
+
+&uart0 {
+	status = "disabled";
+};
+
+&zephyr_udc0 {
+	cdc_acm_uart0: cdc_acm_uart0 {
+		compatible = "zephyr,cdc-acm-uart";
+	};
+
+	cdc_acm_uart1: cdc_acm_uart1 {
+		compatible = "zephyr,cdc-acm-uart";
+	};
+};
+
+&pio0 {
+	status = "okay";
+
+	pio_ws2812: ws2812 {
+		status = "okay";
+		compatible = "worldsemi,ws2812-rpi-pio";
+		bit-waveform = <3 3 4>;
+		pinctrl-0 = <&ws2812_default>;
+		pinctrl-names = "default";
+
+		led_strip: led_strip {
+			status = "okay";
+			compatible = "worldsemi,ws2812-pb";
+			chain-length = <1>;
+			color-mapping = <LED_COLOR_ID_BLUE LED_COLOR_ID_RED LED_COLOR_ID_GREEN>;
+			reset-delay = <64>;
+		};
+	};
+};
+
+&pinctrl {
+	ws2812_default: ws2812_default {
+		group1 {
+			pinmux = <PIO0_P16>;
+		};
+	};
+};
+
+&clk_sys {
+	clock-frequency = <DT_FREQ_M(48)>;
+};
+
+&clk_peri {
+	clock-frequency = <DT_FREQ_M(48)>;
+};
+
+&vreg {
+	raspberrypi,brown-out-detection;
+
+	/* in uV
+	 * Default: 860000 (0.86V).
+	 * - 860000  (0.86V)
+	 * - 903000  (0.903V)
+	 * - 946000  (0.946V)
+	 * - 989000  (0.989V)
+	 * - 1032000 (1.032V)
+	 */
+	raspberrypi,brown-out-threshold = <1032000>;
+};
+
+&wdt0 {
+	compatible = "raspberrypi,pico-watchdog";
+	status = "okay";
+};
