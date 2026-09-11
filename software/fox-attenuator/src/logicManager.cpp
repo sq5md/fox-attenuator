@@ -91,8 +91,11 @@ void LogicManager::Run()
 {
     msgbus::SystemEvents::EventVariant event;
     while (true) {
-        if (k_msgq_get(&msgQueue_, &event, K_FOREVER) == 0) {
+        if (k_msgq_get(&msgQueue_, &event, K_HOURS(1)) == 0) {
             ProcessEvent(event);
+        }
+        else {
+            msgBus_.Publish(msgbus::events::PowerOff{});
         }
     }
 }
